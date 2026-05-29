@@ -9,6 +9,7 @@ from utils.answer_generator import (
     generate_quiz,
     generate_summary,
 )
+from utils.calculator import BASES, convert_base, find_matching_option, logic_gate_result, truth_table
 from utils.material_manager import (
     delete_many_materials,
     document_type,
@@ -407,6 +408,87 @@ def main() -> None:
             selected_doc = next(doc for doc in subject_documents if doc["file_name"] == selected_file)
             render_sources(selected_doc)
             st.text_area("Texto extraido", selected_doc["text"], height=300)
+
+    with st.expander("Calculadora de bases e portas logicas", expanded=False):
+        calc_tab, options_tab, gates_tab = st.tabs(
+            ["Conversao de bases", "Questao de alternativa", "Portas logicas"]
+        )
+
+        with calc_tab:
+            c1, c2, c3 = st.columns([1, 1, 1])
+            with c1:
+                number_value = st.text_input("Numero", placeholder="Exemplo: 1011")
+            with c2:
+                from_base = st.selectbox("Base de entrada", options=list(BASES.keys()), index=1)
+            with c3:
+                to_base = st.selectbox("Base de saida", options=list(BASES.keys()), index=0)
+
+            if st.button("Converter numero"):
+                try:
+                    conversion = convert_base(number_value, from_base, to_base)
+                    st.success(f"Resultado: {conversion['result']}")
+                    st.code(conversion["steps"], language="text")
+                except Exception as exc:
+                    st.error(f"Erro na conversao: {exc}")
+
+        with options_tab:
+            st.caption("Cole uma questao com alternativas. O app calcula e tenta marcar a alternativa correta.")
+            option_question = st.text_area(
+                "Questao",
+                placeholder=(
+                    "Exemplo:\n"
+                    "Qual alternativa representa 1011 em decimal?\n"
+                    "A) 9\nB) 10\nC) 11\nD) 12"
+                ),
+                height=150,
+            )
+            oc1, oc2, oc3 = st.columns([1, 1, 1])
+            with oc1:
+                option_number = st.text_input("Numero da questao", placeholder="1011")
+            with oc2:
+                option_from_base = st.selectbox(
+                    "Base original",
+                    options=list(BASES.keys()),
+                    index=1,
+                    key="option_from_base",
+                )
+            with oc3:
+                option_to_base = st.selectbox(
+                    "Converter para",
+                    options=list(BASES.keys()),
+                    index=0,
+                    key="option_to_base",
+                )
+
+            if st.button("Resolver alternativa"):
+                try:
+                    conversion = convert_base(option_number, option_from_base, option_to_base)
+                    option = find_matching_option(option_question, conversion["result"])
+                    st.success(f"Resultado calculado: {conversion['result']}")
+                    st.code(conversion["steps"], language="text")
+                    if option:
+                        st.info(f"Alternativa correspondente: {option}")
+                    else:
+                        st.warning("Nao encontrei uma alternativa que bata exatamente com o resultado.")
+                except Exception as exc:
+                    st.error(f"Erro ao resolver: {exc}")
+
+        with gates_tab:
+            gate = st.selectbox("Porta logica", options=["AND", "OR", "NOT", "NAND", "NOR", "XOR", "XNOR"])
+            gc1, gc2 = st.columns(2)
+            with gc1:
+                input_a = st.selectbox("Entrada A", options=[0, 1])
+            with gc2:
+                input_b = st.selectbox("Entrada B", options=[0, 1], disabled=gate == "NOT")
+
+            if st.button("Calcular porta"):
+                try:
+                    result = logic_gate_result(gate, input_a, None if gate == "NOT" else input_b)
+                    st.success(f"Saida: {result}")
+                    table = truth_table(gate)
+                    st.dataframe(pd.DataFrame(table), use_container_width=True, hide_index=True)
+                except Exception as exc:
+                    st.error(f"Erro na porta logica: {exc}")
 
 
 if __name__ == "__main__":

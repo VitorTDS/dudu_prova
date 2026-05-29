@@ -59,6 +59,9 @@ python -m streamlit run app.py
 - Download manual por URL.
 - Dominios extras permitidos, configurados pela interface.
 - Modos de estudo: Resposta, Resumo, Flashcards e Simulado.
+- Calculadora offline de conversao de bases.
+- Resolucao de alternativas simples por resultado calculado.
+- Tabela verdade e saida de portas logicas.
 
 ## Baixar materiais por tema
 
@@ -92,3 +95,4 @@ Por seguranca, a URL precisa estar em um dominio permitido. Para liberar um novo
 - O Google nao e usado diretamente porque automacao de resultados do Google normalmente exige API propria ou pode ser bloqueada.
 - As respostas sao extrativas: o app reorganiza frases dos seus materiais, evitando inventar conteudo fora das fontes salvas.
 - Para baixar temas novos, precisa de internet. Para consultar materiais ja salvos, nao precisa.
+- A calculadora de bases e portas logicas nao depende dos PDFs; ela usa regras fixas para ajudar em questoes de calculo.
