@@ -1,0 +1,18 @@
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.streamlit/
+
+# Materiais pessoais e textos processados ficam locais.
+data/uploads/*
+data/processed/*
+!data/uploads/.gitkeep
+!data/processed/.gitkeep
+
+# Arquivos de sistema/editor.
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
